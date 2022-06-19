@@ -9,6 +9,7 @@ const initialCartState = {
 
 //function like inside of reducer Actions
 const cartReducer = (state, action) => {
+  // if action type is ADD_ITEM
   if (action.type === "ADD_ITEM") {
     // caoncat is like push but it adds to the end of the array
 
@@ -46,7 +47,38 @@ const cartReducer = (state, action) => {
       totalAmount: updatedTotalAmount,
     };
   }
+
+  // if the action is REMOVE_ITEM
   if (action.type === "REMOVE_ITEM") {
+    // find the card item to remove
+    const existingCartItemIndex = state.items.findIndex(
+      (item) => item.id === action.id
+    );
+
+    // existingCartItem is the item to remove
+    const existingItem = state.items[existingCartItemIndex];
+
+    // total amount while reducing the amount of the item price
+    const updatedTotalAmount = state.totalAmount - existingItem.price;
+    let updatedItems;
+
+    // if exsting item amount === 1 then remove the item
+    if (existingItem.amount === 1) {
+      updatedItems = state.items.filter((item) => item.id !== action.id);
+      //keep the items array but remove the item and decrease the total amount
+    } else {
+      // if the item amount is more than 1, then reduce the amount
+      const updatedItem = { ...existingItem, amount: existingItem.amount - 1 };
+      // update the items array
+      updatedItems = [...state.items];
+      // replace the item at the index with the updated item, overwriting the old item
+      updatedItems[existingCartItemIndex] = updatedItem;
+    }
+
+    return {
+      items: updatedItems,
+      totalAmount: updatedTotalAmount,
+    };
   }
   return initialCartState;
 };
